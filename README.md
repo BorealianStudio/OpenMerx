@@ -9,14 +9,14 @@ de transformation permettant d'effectuer du commerce et aller jusqu'à construir
 Si le projet vous interesse, n'hésitez pas à contacter NDrew sur le discord unity3D-France https://discord.gg/zrMpNyx
 
 # Objectifs
-Le projet n'a pas vocation à être commercialisé. L'objectif ici est simple, créer un jeu pour y jouer simplement.
+Le projet n'a pas vocation à être commercialisé. L'objectif ici est simple, créer un jeu pour y jouer.
 Si une communauté se forme, cette commuauté pourra participer aux développements.
 
 # Licence
 Le projet est distribué sous licence MIT en ce qui concerne les codes sources.
-Les compsantes graphiques ainsi que la documentation sont quant à elle distribué sous licence CC-BY-4 https://creativecommons.org/licenses/by/4.0/
+Les compsantes graphiques ainsi que la documentation sont quant à elle distribuées sous licence CC-BY-4 https://creativecommons.org/licenses/by/4.0/
 
-L'utilisation du contenu de ce projet est donc possible sous condition de citer ce projet sous forme 
+L'utilisation du contenu de ce projet est donc possible sous condition de citer ce projet sous la forme suivante :
 
 	Contenue basé sur le projet github.com/borealianstudio/OpenMerx sous licence MIT / CC-BY-4
 
