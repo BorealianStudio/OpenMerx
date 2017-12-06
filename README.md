@@ -12,14 +12,31 @@ Si le projet vous interesse, n'hésitez pas à contacter NDrew sur le discord un
 Le projet n'a pas vocation à être commercialisé. L'objectif ici est simple, créer un jeu pour y jouer simplement.
 Si une communauté se forme, cette commuauté pourra participer aux développements.
 
+# Licence
+Le projet est distribué sous licence MIT en ce qui concerne les codes sources.
+Les compsantes graphiques ainsi que la documentation sont quant à elle distribué sous licence CC-BY-4 https://creativecommons.org/licenses/by/4.0/
+
+L'utilisation du contenu de ce projet est donc possible sous condition de citer ce projet sous forme 
+
+	Contenue basé sur le projet github.com/borealianstudio/OpenMerx sous licence MIT / CC-BY-4
+
+Les contributions au projet sont effectuées sous les licences citées plus haut.
+
 # Installation de l'environnement 
-Il faut ajouter les assets gratuits suivant au projet. Pour plus de simplicité, les ajouter au dossier Assets/ThirdParty comme son contenue est déjà ignoré lors des commits.
 
-Json.net for unity
-https://www.assetstore.unity3d.com/en/#!/content/11347
+- Forker le repo sous son user
+- Cloner en local
+- Ajouter les assets suivant dans le dossier unityClient/Assets/ThirdParty
+  - Json.net for unity
+    https://www.assetstore.unity3d.com/en/#!/content/11347
+  - unity-ui-extensions
+    https://bitbucket.org/UnityUIExtensions/unity-ui-extensions
+- (optionel) faire une branche pour regrouper les modifications d'un sujet
+- Effectuer les commits et push sur votre repo
+- Quand c'est terminé, effectuer un pullRequest qui sera étudié par les admins et eventuellement mergé dans le repo principal.
 
-unity-ui-extensions
-https://bitbucket.org/UnityUIExtensions/unity-ui-extensions
+un lien vers un bon résumé de la procédure sur openclassrooms : 
+https://openclassrooms.com/courses/gerer-son-code-avec-git-et-github/contribuer-a-des-projets-open-source
 
 Important : Il ne faut pas push les assets sur ce gitHub pour respecter les droits d'auteurs.
 
