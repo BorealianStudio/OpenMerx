@@ -1,7 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 
 public class NodeLink : MonoBehaviour {
+
+    [SerializeField, Tooltip("")]
+    Button buttonSelect = null;
 
     UILineRenderer _line = null;
     RectTransform _rectTrasnform;
@@ -20,11 +24,14 @@ public class NodeLink : MonoBehaviour {
         _rectTrasnform = GetComponent<RectTransform>();
         _rectTrasnform.pivot = Vector2.zero;
 
+        buttonSelect.onClick.AddListener(OnClic);
+
         UpdateView();
     }
 
     public void SetColor(Color color) {
         _line.color = color;
+        buttonSelect.image.color = color;
     }
 
     public void SetInputPosition(Vector2 inPos) {
@@ -42,6 +49,12 @@ public class NodeLink : MonoBehaviour {
         to = localPos;
 
         UpdateView();
+    }
+    
+    private void OnClic() {
+        if (Editor.CanSelect()){
+            Editor.SetActiveLink(this);
+        }
     }
 
     void UpdateView() {

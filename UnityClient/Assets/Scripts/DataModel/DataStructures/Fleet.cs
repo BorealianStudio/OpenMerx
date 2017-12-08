@@ -10,7 +10,8 @@ public class Fleet : DataObject{
     public int LastStation { get; set; }
     public int LastHangar { get; set; }
     public int CurrentNode { get; set; }
-    public int TaskStartFrame { get; set; }
+    public int LastUpdateFrame { get; set; }
+    public int NextUpdateFrame { get; set; }
     public ParamHolder FleetParams { get; set; }
     
 

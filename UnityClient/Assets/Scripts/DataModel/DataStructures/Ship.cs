@@ -14,6 +14,10 @@ public class Ship : DataObject {
         ID = id;
     }
 
+    public void AddLog(string log) {
+        Logs += "\n" + log;
+    }
+
     public override List<EventHolder> Update(DataObject o) {
         List<EventHolder> result = new List<EventHolder>();
         Ship s = o as Ship;

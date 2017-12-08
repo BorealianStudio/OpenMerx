@@ -24,7 +24,7 @@ public class HangarSelectionNodeView : MonoBehaviour {
         }
         hangars.value = 0;
         hangars.RefreshShownValue();
-        
+
         hangars.onValueChanged.AddListener(OnHangarChange);
     }
 
@@ -39,7 +39,9 @@ public class HangarSelectionNodeView : MonoBehaviour {
                     break;
                 }
             }
-        }        
+        } else {
+            OnHangarChange(0);
+        }
     }
 
     private void OnHangarChange(int value) {

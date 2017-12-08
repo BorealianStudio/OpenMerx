@@ -119,7 +119,9 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
     }
 
     public void ClearParam(string paramName) {
-
+        if (_links.ContainsKey(paramName)) {
+            _links.Remove(paramName);
+        }
     }
 
     public void SetLinkToParam(NodeLink link, Node fromNode, string fromParamName, Node toNode, string toParamName) {
@@ -157,7 +159,7 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        if (!_wasDraged) {
+        if (!_wasDraged && Editor.CanSelect()) {
             Editor.SetActiveNode(this);
         }
     }

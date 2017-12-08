@@ -206,6 +206,10 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         CreateNode(Vector2.zero, prefabs["Start"]);
     }
 
+    public bool CanSelect() {
+        return _currentLink == null;
+    }
+
     private void CreateNodePrefab(NodePrefabInfos infos) {
         if (infos.visible) {
             NodeType nodeType = Instantiate<NodeType>(nodeTypePrefab, prefabZone);
@@ -242,6 +246,45 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         _nodes.Add(i.id, n);
     }
 
+    public void RemoveLink(NodeLink link) {
+
+        List<NodeLink> links = new List<NodeLink>();
+        links.Add(link);
+        foreach (Node n in _nodes.Values) {
+            n.RemoveLink(links);
+            
+        }
+
+        Node target = _nodes[link.infos.ToID];
+        target.ClearParam(link.infos.ToParam);
+
+        Node source = _nodes[link.infos.FromID];
+        source.ClearParam(link.infos.FromParam);
+
+        link.transform.SetParent(null);
+        Destroy(link.gameObject);
+
+        SetActiveLink(null);
+    }
+
+    public void EditTargetLink(NodeLink l) {
+        _currentLink = l;
+
+        Node target = _nodes[l.infos.ToID];
+        target.ClearParam(l.infos.ToParam);
+                
+        _currentFromNode = _nodes[l.infos.FromID];
+        foreach (ParamInfos p in _currentFromNode.NodePrefabInfos.outputs) {
+            if (p.Name == l.infos.FromParam) {
+                _currentFromParam = p;
+                break;
+            }
+        }
+
+        SetActiveLink(null);
+        SetActiveNode(null);
+    }
+
     public void RemoveNode(Node node) {
         if (null == node)
             return;
@@ -266,7 +309,16 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         }
     }
 
-    public void SetActiveNode(Node node) {
+    public void SetActiveLink(NodeLink link) {      
+        if(null != link) {
+            detailZone.gameObject.SetActive(true);
+            detailZone.SetLink(link);
+        } else {
+            detailZone.gameObject.SetActive(false);                            
+        }
+    }
+
+    public void SetActiveNode(Node node) {        
         if (null == node) {
             detailZone.gameObject.SetActive(false);            
         } else {
