@@ -118,7 +118,7 @@ MonoBehaviour:
   lineCaps: 0
   bezierSegmentsPerCurve: 10
   LineJoins: 0
-  BezierMode: 0
+  BezierMode: 1
   drivenExternally: 0
 --- !u!114 &114908069109594986
 MonoBehaviour:

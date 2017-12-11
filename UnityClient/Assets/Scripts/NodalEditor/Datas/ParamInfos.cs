@@ -13,13 +13,22 @@ public class ParamInfos{
         ParamHangar
     }
 
-    public ParamType Type { get; set; }
-    public ParamDirection Direction { get; set; }
-    public string Name { get; set; }
+    public enum ParamConnectType {
+        Param0_1,
+        Param0_N,
+        Param1_1,
+        Param1_N        
+    }
 
-    public ParamInfos(ParamType type, ParamDirection dir, string name) {
+    public ParamType Type { get; private set; }
+    public ParamDirection Direction { get; private set; }
+    public ParamConnectType ConnectType { get; private set; }
+    public string Name { get; private set; }
+    
+    public ParamInfos(ParamType type, ParamDirection dir, ParamConnectType connectType, string name) {
         Type = type;
         Direction = dir;
+        ConnectType = connectType;
         Name = name;
     }
 }

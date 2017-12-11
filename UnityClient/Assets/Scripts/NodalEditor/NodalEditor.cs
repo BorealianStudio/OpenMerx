@@ -52,33 +52,39 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         //ici on crée les prefabs par defauts, a terme ca doit sortir
         NodePrefabInfos prefabStart = new NodePrefabInfos();
         prefabStart.nodeName = "Start";
-        prefabStart.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, "StartOutput"));
+        prefabStart.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "StartOutput"));
         prefabStart.visible = false;
         prefabs.Add(prefabStart.nodeName, prefabStart);
 
         NodePrefabInfos prefabEnd = new NodePrefabInfos();
         prefabEnd.nodeName = "End";
-        prefabEnd.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, "EndInput"));
+        prefabEnd.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param0_N, "EndInput"));
         prefabs.Add(prefabEnd.nodeName, prefabEnd);
 
         NodePrefabInfos prefabStationSelector = new NodePrefabInfos();
         prefabStationSelector.nodeName = "Hangar selector";
-        prefabStationSelector.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamHangar, ParamInfos.ParamDirection.ParamOut, "station"));
+        prefabStationSelector.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamHangar, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param0_N, "station"));
         prefabs.Add(prefabStationSelector.nodeName, prefabStationSelector);
 
         NodePrefabInfos prefabExplore = new NodePrefabInfos();
         prefabExplore.nodeName = "Explore";
-        prefabExplore.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, "ExploreInput"));
-        prefabExplore.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, "ExploreOutput"));
+        prefabExplore.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N,"ExploreInput"));
+        prefabExplore.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "ExploreOutput"));
         prefabs.Add(prefabExplore.nodeName, prefabExplore);
 
         NodePrefabInfos prefabMoveTo = new NodePrefabInfos();
         prefabMoveTo.nodeName = "Move To";
-        prefabMoveTo.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, "MoveInput"));
-        prefabMoveTo.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamHangar, ParamInfos.ParamDirection.ParamIn, "Station"));
-        prefabMoveTo.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, "MoveOutput"));
+        prefabMoveTo.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N, "MoveInput"));
+        prefabMoveTo.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamHangar, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_1, "Station"));
+        prefabMoveTo.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "MoveOutput"));
         prefabs.Add(prefabMoveTo.nodeName, prefabMoveTo);
 
+        NodePrefabInfos prefabLoop = new NodePrefabInfos();
+        prefabLoop.nodeName = "Loop";
+        prefabLoop.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N, "FlowIn"));        
+        prefabLoop.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "FlowOutRepeat"));
+        prefabLoop.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "FlowOutEnd"));
+        prefabs.Add(prefabLoop.nodeName, prefabLoop);
 
         if (readOnly) {
             RectTransform r = prefabZone.GetComponent<RectTransform>();
@@ -185,8 +191,8 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
             link.transform.SetAsFirstSibling();
             link.infos = l;
 
-            fromNode.SetLinkToParam(link, fromNode, l.FromParam, targetNode, l.ToParam);
-            targetNode.SetLinkToParam(link, fromNode, l.FromParam, targetNode, l.ToParam);
+            fromNode.SetLinkToParam(link);
+            targetNode.SetLinkToParam(link);
         }
     }
 
@@ -247,19 +253,9 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
     }
 
     public void RemoveLink(NodeLink link) {
-
-        List<NodeLink> links = new List<NodeLink>();
-        links.Add(link);
         foreach (Node n in _nodes.Values) {
-            n.RemoveLink(links);
-            
+            n.RemoveLink(link);           
         }
-
-        Node target = _nodes[link.infos.ToID];
-        target.ClearParam(link.infos.ToParam);
-
-        Node source = _nodes[link.infos.FromID];
-        source.ClearParam(link.infos.FromParam);
 
         link.transform.SetParent(null);
         Destroy(link.gameObject);
@@ -271,7 +267,7 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         _currentLink = l;
 
         Node target = _nodes[l.infos.ToID];
-        target.ClearParam(l.infos.ToParam);
+        target.RemoveLink(l);
                 
         _currentFromNode = _nodes[l.infos.FromID];
         foreach (ParamInfos p in _currentFromNode.NodePrefabInfos.outputs) {
@@ -292,7 +288,7 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         List<NodeLink> toDelete = node.GetLinks();
 
         foreach(Node n in _nodes.Values) {
-            n.RemoveLink(toDelete);
+            n.RemoveLinks(toDelete);
         }
 
         foreach(NodeLink n in toDelete) {
@@ -347,12 +343,13 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
                     node.IsParamFree(infos.Name) && 
                     _currentFromParam.Type == infos.Type) {
 
-                    _currentFromNode.SetLinkToParam(_currentLink, _currentFromNode, _currentFromParam.Name, node, infos.Name);
-                    node.SetLinkToParam(_currentLink, _currentFromNode, _currentFromParam.Name, node, infos.Name);
-    
                     LinkInfo linkInfo = new LinkInfo(_currentFromNode.NodeInfos.id, _currentFromParam.Name,
                                                     node.NodeInfos.id, infos.Name, infos.Type);
                     _currentLink.infos = linkInfo;
+
+                    _currentFromNode.SetLinkToParam(_currentLink);
+                    node.SetLinkToParam(_currentLink);
+    
                     _currentFromNode = null;
                     _currentLink = null;
                     _currentFromParam = null;
