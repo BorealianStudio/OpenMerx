@@ -73,6 +73,14 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
 
     private void Start() {
         _rectTransform = transform.parent.GetComponent<RectTransform>();
+
+        foreach (ParamLinkDetail p in _links.Values) {
+            if (p.isFrom) {
+                p.link.SetInputPosition(p.button.transform.position);
+            } else {
+                p.link.SetOutputPosition(p.button.transform.position);
+            }
+        }
     }
 
     public Vector2 GetParamAttachPoint(ParamInfos p) {

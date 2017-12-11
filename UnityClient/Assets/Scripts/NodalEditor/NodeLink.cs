@@ -19,7 +19,6 @@ public class NodeLink : MonoBehaviour {
 
     private void Awake() {
         _line = GetComponent<UILineRenderer>();
-        _line.BezierMode = UILineRenderer.BezierType.Quick;
         _line.color = Color.red;
         _rectTrasnform = GetComponent<RectTransform>();
         _rectTrasnform.pivot = Vector2.zero;
@@ -59,6 +58,9 @@ public class NodeLink : MonoBehaviour {
 
     void UpdateView() {
 
+        float dist = Vector2.Distance(from, to);
+        _line.BezierSegmentsPerCurve = System.Convert.ToInt32(dist / 10.0f);
+
         if (from.x < to.x) { 
             if (to.y > from.y) {
                 float distX = to.x - from.x;
@@ -72,7 +74,7 @@ public class NodeLink : MonoBehaviour {
 
                 Vector2[] points = new Vector2[4];
                 points[0] = new Vector2(0.0f, 0.0f);
-                points[1] = new Vector2(_rectTrasnform.rect.width * 0.5f, 10.0f);
+                points[1] = new Vector2(_rectTrasnform.rect.width * 0.5f, 0.0f);
                 points[2] = new Vector2(_rectTrasnform.rect.width * 0.5f, _rectTrasnform.rect.height);
                 points[3] = new Vector2(_rectTrasnform.rect.width, _rectTrasnform.rect.height);
                 _line.Points = points;
