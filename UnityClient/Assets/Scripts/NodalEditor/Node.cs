@@ -7,20 +7,21 @@ using UnityEngine.EventSystems;
 using System;
 
 [RequireComponent(typeof(RectTransform))]
-public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHandler, IPointerClickHandler {
+public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler {
 
     RectTransform _rectTransform = null;
 
     [SerializeField] Text label = null;
-    [SerializeField] GameObject paramButtonPrefab = null;
-    [SerializeField] Transform leftParams = null;
-    [SerializeField] Transform rightParams = null;
+
+    [SerializeField, Tooltip("Prefab pour une ligne de parametre")]
+    NodeParamLine paramLinePrefab = null;
 
     public NodalEditor Editor { get; set; }
     private NodeInfos _nodeInfos = null;
     private NodePrefabInfos _nodePrefab = null;
 
-    private bool _wasDraged = false;    
+    private bool _wasDraged = false;
+    private Vector3 _dragDelta = Vector2.zero;
 
     private Dictionary<string, Button> _buttons = new Dictionary<string, Button>();
     private List<NodeLink> _links = new List<NodeLink>();
@@ -47,25 +48,24 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
             _buttons.Clear();
 
             foreach (ParamInfos p in _nodePrefab.inputs) {
-                GameObject o = Instantiate<GameObject>(paramButtonPrefab, leftParams);
-                Button b = o.GetComponent<Button>();
-                Image i = o.GetComponent<Image>();
+                NodeParamLine line = Instantiate(paramLinePrefab, this.transform);
+                Button b = line.SetData(p);
+                Image i = b.GetComponent<Image>();
                 i.color = Editor.ColorFromType(p.Type);
                 _buttons.Add(p.Name, b);
                 b.onClick.AddListener(() => { Editor.ParamClic(this, p, _buttons[p.Name].transform.position); });
             }
 
             foreach (ParamInfos p in _nodePrefab.outputs) {
-                GameObject o = Instantiate<GameObject>(paramButtonPrefab, rightParams);
-                Button b = o.GetComponent<Button>();
-                Image i = o.GetComponent<Image>();
+                NodeParamLine line = Instantiate(paramLinePrefab, this.transform);
+                Button b = line.SetData(p);
+                Image i = b.GetComponent<Image>();
                 i.color = Editor.ColorFromType(p.Type);
                 _buttons.Add(p.Name, b);
                 b.onClick.AddListener(() => { Editor.ParamClic(this, p, _buttons[p.Name].transform.position); });
             }
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(leftParams.GetComponent<RectTransform>());
-            LayoutRebuilder.ForceRebuildLayoutImmediate(rightParams.GetComponent<RectTransform>());
+            LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         }
 
     }       
@@ -156,6 +156,7 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
+        _dragDelta = Input.mousePosition - transform.position;
         _wasDraged = false;
     }
 
@@ -166,12 +167,14 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
 
         _wasDraged = true;
 
+        Vector3 inputPosition = Input.mousePosition - _dragDelta;
+
         Vector2 localPoint;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(Editor.GetModelZone(), Input.mousePosition, null, out localPoint);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(Editor.GetModelZone(), inputPosition, null, out localPoint);
         NodeInfos.posX = localPoint.x;
         NodeInfos.posY = localPoint.y;        
 
-        transform.position = Input.mousePosition;
+        transform.position = inputPosition;
 
         UpdateLinks();
 

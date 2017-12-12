@@ -4,9 +4,9 @@ public class ParamInfos{
 
     public enum ParamDirection {
         ParamIn,
-        ParamOut,
-        FlowOut          
+        ParamOut
     }
+
     public enum ParamType {
         ParamFlow,
         ParamShip,
