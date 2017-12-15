@@ -1,7 +1,19 @@
-﻿
-public class ExploreNode : ExecutableNode{
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class ExploreNode : ExecutableNode, IBookmarkParam{
 
     public ExploreNode(Fleet f, NodalEditor.SaveStruct nodes, int nodeIndex, SimulatedWideDataManager.SerializeContainer data) : base(f,nodes,nodeIndex,data) {
+    }
+
+    public Bookmark GetBookmark(string paramName) {
+        NodeInfos n = _nodes.nodes[_myID];
+        int id = n.nodeParams.GetInt("found", -1);
+        if(id != -1) {
+            return _data._bookmarks[id];
+        }
+        return null;
     }
 
     public override int Update(ServerUpdate serverUpdate) {
@@ -48,10 +60,40 @@ public class ExploreNode : ExecutableNode{
             case "explore": {
                 NextUpdateFrame(200);
 
+                //choisir un POI si possible
+                bool didFound = false;
+                Random r = new Random();
+                double a = r.NextDouble();
+                NodeInfos n = _nodes.nodes[_myID];
+                int sector = n.nodeParams.GetInt("zone",0);
+                List<PointOfInterest> possible = _data._POIs.Values.Where(p => p.FindProba > a && p.Sector == sector).ToList();
+                if (possible.Count > 0) {
+                    didFound = true;
+                    int index = r.Next(possible.Count);
+                    PointOfInterest found = possible[index];
+
+                    Bookmark bookmark = new Bookmark(_data._bookmarkIDs++, index);
+                    bookmark.datas = found.DatasToBookmark();
+                    _data._bookmarks.Add(bookmark.ID, bookmark);
+
+                    n.nodeParams.Set("found", bookmark.ID);
+
+/*
+                    Corporation c = _container._corps[s.Corp];
+                    SendMailRequest request = new SendMailRequest(-1, c.Owner);
+                    request.Message = "You found something while exploring, congrat! \n\n" + found.Description;
+                    request.Subject = "Exploration result";
+                    _manager.SendRequest(request);
+*/
+                }
+
                 foreach (int sID in _fleet.ShipIDs) {
                     Ship ship = _data._ships[sID];
                     ship.Status = "Moving back to station";
                     ship.AddLog("Done with exploration");
+                    if (didFound) {
+                        ship.AddLog("And found something...");
+                    }
                     serverUpdate.Add(ship);
                 }
                 _fleet.FleetParams.Set("currentState", "moveIn");

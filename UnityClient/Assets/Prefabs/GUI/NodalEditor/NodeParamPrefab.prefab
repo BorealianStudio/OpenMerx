@@ -294,7 +294,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inputButton: {fileID: 114349866651229240}
   outputButton: {fileID: 114987006382528814}
-  name: {fileID: 114871999776390810}
+  paramName: {fileID: 114871999776390810}
 --- !u!114 &114947548804319930
 MonoBehaviour:
   m_ObjectHideFlags: 1

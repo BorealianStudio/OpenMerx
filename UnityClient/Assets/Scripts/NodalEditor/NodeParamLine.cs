@@ -9,11 +9,11 @@ public class NodeParamLine : MonoBehaviour {
     Button outputButton = null;
 
     [SerializeField, Tooltip("Le text qui affiche le nom du parametre")]
-    Text name = null;
+    Text paramName = null;
 
     public Button SetData(ParamInfos p) {
 
-        name.text = p.Name;
+        paramName.text = p.Name;
 
         if(p.Direction == ParamInfos.ParamDirection.ParamIn) {
             outputButton.gameObject.SetActive(false);

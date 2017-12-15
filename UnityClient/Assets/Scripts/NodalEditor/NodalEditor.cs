@@ -70,6 +70,7 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         prefabExplore.nodeName = "Explore";
         prefabExplore.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N,"ExploreInput"));
         prefabExplore.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "ExploreOutput"));
+        prefabExplore.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBookmark, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param0_N, "FoundLocation"));
         prefabs.Add(prefabExplore.nodeName, prefabExplore);
 
         NodePrefabInfos prefabMoveTo = new NodePrefabInfos();
@@ -79,6 +80,14 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         prefabMoveTo.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "MoveOutput"));
         prefabs.Add(prefabMoveTo.nodeName, prefabMoveTo);
 
+        NodePrefabInfos prefabIf = new NodePrefabInfos();
+        prefabIf.nodeName = "If";
+        prefabIf.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N, IfNode.InFlow));
+        prefabIf.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBoolean, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_1, IfNode.TestValue));
+        prefabIf.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, IfNode.OutFlowTrue));
+        prefabIf.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, IfNode.OutFlowFalse));
+        prefabs.Add(prefabIf.nodeName, prefabIf);
+
         NodePrefabInfos prefabLoop = new NodePrefabInfos();
         prefabLoop.nodeName = "Loop";
         prefabLoop.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N, "FlowIn"));        
@@ -86,12 +95,19 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         prefabLoop.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "FlowOutEnd"));
         prefabs.Add(prefabLoop.nodeName, prefabLoop);
 
+        NodePrefabInfos prefabNotNull = new NodePrefabInfos();
+        prefabNotNull.nodeName = "NotNull";
+        prefabNotNull.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBookmark, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N, NotNull.InputParam));
+        prefabNotNull.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBoolean, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, NotNull.OutputParam));
+        prefabs.Add(prefabNotNull.nodeName, prefabNotNull);
+
+
         if (readOnly) {
-            RectTransform r = prefabZone.GetComponent<RectTransform>();
-            r.sizeDelta = Vector2.zero;
-            r = GetComponentInChildren<ScrollRect>().GetComponentInChildren<RectTransform>();
-            r.anchoredPosition = Vector2.zero;
-            r.sizeDelta = Vector2.zero;
+            transform.Find("PrefabZone").gameObject.SetActive(false);
+            RectTransform r = transform.Find("Scroll View").GetComponent<RectTransform>();
+            r.offsetMin = Vector2.zero;
+            r.offsetMax = Vector2.zero;
+
         } else {
             foreach (NodePrefabInfos i in prefabs.Values) {
                 CreateNodePrefab(i);
@@ -285,7 +301,7 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         if (null == node)
             return;
 
-        List<NodeLink> toDelete = node.GetLinks();
+        List<NodeLink> toDelete = new List<NodeLink>(node.GetLinks());
 
         foreach(Node n in _nodes.Values) {
             n.RemoveLinks(toDelete);
@@ -363,6 +379,8 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
             case ParamInfos.ParamType.ParamFlow: return Color.white;
             case ParamInfos.ParamType.ParamShip: return Color.red;
             case ParamInfos.ParamType.ParamHangar: return Color.green;
+            case ParamInfos.ParamType.ParamBookmark: return Color.blue;
+            case ParamInfos.ParamType.ParamBoolean: return Color.yellow;
         }
         return Color.white;
     }

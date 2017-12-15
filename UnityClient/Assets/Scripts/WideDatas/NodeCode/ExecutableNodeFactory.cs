@@ -10,8 +10,10 @@ public  static class ExecutableNodeFactory {
             case "Start": return new StartNode(fleet, data, nodeID, SimulatedWideDataManager.Container);
             case "End": return new EndNode(fleet, data, nodeID, SimulatedWideDataManager.Container);
             case "Explore": return new ExploreNode(fleet, data, nodeID, SimulatedWideDataManager.Container);
+            case "If": return new IfNode(fleet, data, nodeID, SimulatedWideDataManager.Container);
             case "Move To": return new MoveToNode(fleet, data, nodeID, SimulatedWideDataManager.Container);
-            case "Loop": return new LoopNode(fleet, data, nodeID, SimulatedWideDataManager.Container);
+            case "NotNull": return new NotNull(fleet, data, nodeID, SimulatedWideDataManager.Container);
+            case "Loop": return new LoopNode(fleet, data, nodeID, SimulatedWideDataManager.Container);            
         }
 
         throw new System.Exception(n.type + " : Unkown type of executionNode");        

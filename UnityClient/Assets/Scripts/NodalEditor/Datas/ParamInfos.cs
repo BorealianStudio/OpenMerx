@@ -10,7 +10,9 @@ public class ParamInfos{
     public enum ParamType {
         ParamFlow,
         ParamShip,
-        ParamHangar
+        ParamHangar,
+        ParamBookmark,
+        ParamBoolean
     }
 
     public enum ParamConnectType {

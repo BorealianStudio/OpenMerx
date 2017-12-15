@@ -15,7 +15,30 @@ public abstract class ExecutableNode {
     }
 
     public abstract int Update(ServerUpdate serverUpdate);
-    
+
+    protected LinkInfo GetSourceLink(string targetParamName) {
+        foreach(LinkInfo l in _nodes.links) {
+            if(l.ToID == _myID && l.ToParam == targetParamName) {
+                return l;
+            }
+        }
+        return null;
+    }
+
+    protected LinkInfo GetTargetLink(string sourceParamName) {
+        foreach (LinkInfo l in _nodes.links) {
+            if (l.FromID == _myID && l.FromParam == sourceParamName) {
+                return l;
+            }
+        }
+        return null;
+    }
+
+    protected ExecutableNode GetNode(int nodeID) {
+        ExecutableNode node = ExecutableNodeFactory.GetNode(_fleet, _nodes, nodeID);
+        return node;
+    }
+
     protected void NextUpdateFrame(int frameToAdd) {
         _fleet.LastUpdateFrame = _fleet.NextUpdateFrame;
         _fleet.NextUpdateFrame = _fleet.LastUpdateFrame + frameToAdd;
