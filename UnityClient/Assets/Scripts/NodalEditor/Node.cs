@@ -7,28 +7,24 @@ using UnityEngine.EventSystems;
 using System;
 
 [RequireComponent(typeof(RectTransform))]
-public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHandler, IPointerClickHandler {
+public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler {
 
     RectTransform _rectTransform = null;
 
     [SerializeField] Text label = null;
-    [SerializeField] GameObject paramButtonPrefab = null;
-    [SerializeField] Transform leftParams = null;
-    [SerializeField] Transform rightParams = null;
+
+    [SerializeField, Tooltip("Prefab pour une ligne de parametre")]
+    NodeParamLine paramLinePrefab = null;
 
     public NodalEditor Editor { get; set; }
     private NodeInfos _nodeInfos = null;
     private NodePrefabInfos _nodePrefab = null;
-    private bool _wasDraged = false;    
 
-    private struct ParamLinkDetail {
-        public NodeLink link;
-        public Button button;
-        public bool isFrom;// true si ce param est le debug du link, faux sinon
-    }
+    private bool _wasDraged = false;
+    private Vector3 _dragDelta = Vector2.zero;
 
     private Dictionary<string, Button> _buttons = new Dictionary<string, Button>();
-    private Dictionary<string, ParamLinkDetail> _links = new Dictionary<string, ParamLinkDetail>();
+    private List<NodeLink> _links = new List<NodeLink>();
 
 
     public NodeInfos NodeInfos {
@@ -40,6 +36,7 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
             transform.localPosition = new Vector2(value.posX, value.posY);
         }
     }
+
     public NodePrefabInfos NodePrefabInfos {
         get {
             return _nodePrefab;
@@ -51,101 +48,150 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
             _buttons.Clear();
 
             foreach (ParamInfos p in _nodePrefab.inputs) {
-                GameObject o = Instantiate<GameObject>(paramButtonPrefab, leftParams);
-                Button b = o.GetComponent<Button>();
-                Image i = o.GetComponent<Image>();
+                NodeParamLine line = Instantiate(paramLinePrefab, this.transform);
+                Button b = line.SetData(p);
+                Image i = b.GetComponent<Image>();
                 i.color = Editor.ColorFromType(p.Type);
                 _buttons.Add(p.Name, b);
                 b.onClick.AddListener(() => { Editor.ParamClic(this, p, _buttons[p.Name].transform.position); });
             }
 
             foreach (ParamInfos p in _nodePrefab.outputs) {
-                GameObject o = Instantiate<GameObject>(paramButtonPrefab, rightParams);
-                Button b = o.GetComponent<Button>();
-                Image i = o.GetComponent<Image>();
+                NodeParamLine line = Instantiate(paramLinePrefab, this.transform);
+                Button b = line.SetData(p);
+                Image i = b.GetComponent<Image>();
                 i.color = Editor.ColorFromType(p.Type);
                 _buttons.Add(p.Name, b);
                 b.onClick.AddListener(() => { Editor.ParamClic(this, p, _buttons[p.Name].transform.position); });
             }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         }
 
     }       
 
     private void Start() {
         _rectTransform = transform.parent.GetComponent<RectTransform>();
+
+        UpdateLinks();
     }
 
-    public Vector2 GetParamAttachPoint(ParamInfos p) {
-        return _buttons[p.Name].transform.position;
+    public bool IsValid() {
+        foreach(ParamInfos p in _nodePrefab.inputs) {
+            int linkCount = 0;
+            foreach(NodeLink n in _links) {
+                if(n.infos.ToID == NodeInfos.id &&  n.infos.ToParam == p.Name) {
+                    linkCount++;
+                }
+            }
+            switch (p.ConnectType) {
+                case ParamInfos.ParamConnectType.Param0_1:
+                if (linkCount > 1)
+                    return false;
+                break;
+                case ParamInfos.ParamConnectType.Param0_N:
+                break;
+                case ParamInfos.ParamConnectType.Param1_1:
+                if (linkCount != 1)
+                    return false;
+                break;
+                case ParamInfos.ParamConnectType.Param1_N:
+                if (linkCount < 1)
+                    return false;
+                break;
+            }
+        }
+        foreach (ParamInfos p in _nodePrefab.outputs) {
+            int linkCount = 0;
+            foreach (NodeLink n in _links) {
+                if (n.infos.FromID == NodeInfos.id &&  n.infos.FromParam == p.Name) {
+                    linkCount++;
+                }
+            }
+            switch (p.ConnectType) {
+                case ParamInfos.ParamConnectType.Param0_1:
+                if (linkCount > 1)
+                    return false;
+                break;
+                case ParamInfos.ParamConnectType.Param0_N:
+                break;
+                case ParamInfos.ParamConnectType.Param1_1:
+                if (linkCount != 1)
+                    return false;
+                break;
+                case ParamInfos.ParamConnectType.Param1_N:
+                if (linkCount < 1)
+                    return false;
+                break;
+            }
+        }
+        return true;
     }
 
     public List<NodeLink> GetLinks() {
-        List<NodeLink> result = new List<NodeLink>();
-
-        foreach(ParamLinkDetail p in _links.Values) {
-            result.Add(p.link);
-        }
-
-        return result;
+        return _links;
     }
-    public void RemoveLink(List<NodeLink> links) {
 
-        List<string> toRemove = new List<string>();
+    public void RemoveLink(NodeLink link) {
+        _links.Remove(link);
+        UpdateLinks();
+    }
+
+    public void RemoveLinks(List<NodeLink> links) {
         foreach (NodeLink l in links) {
-            foreach (string s in _links.Keys) {
-                if (_links[s].link == l) {
-                    toRemove.Add(s);
-                }
-            }
+            RemoveLink(l);
         }
-        foreach(string s in toRemove) {
-            _links.Remove(s);
-        }
-    }
-    public ParamInfos GetParamInfo(string name) {
-        foreach(ParamInfos p in NodePrefabInfos.inputs) {
-            if (p.Name == name)
-                return p;
-        }
-        foreach (ParamInfos p in NodePrefabInfos.outputs) {
-            if (p.Name == name)
-                return p;
-        }
-        return null;
     }
 
     public bool IsParamFree(string paramName) {
-        return !_links.ContainsKey(paramName);
-    }
-
-    public void ClearParam(string paramName) {
-
-    }
-
-    public void SetLinkToParam(NodeLink link, Node fromNode, string fromParamName, Node toNode, string toParamName) {
-
-        string myParam = "";
-        if (fromNode == this)
-            myParam = fromParamName;
-        else if (toNode == this)
-            myParam = toParamName;
-        else
-            throw new Exception("SetLinkToParam d'un autre noeud?");
-
-        if (_links.ContainsKey(myParam))
-            _links.Remove(myParam);
-
-        ParamLinkDetail d = new ParamLinkDetail();
-        d.isFrom = fromNode == this;
-        d.link = link;
-        d.button = _buttons[myParam];
-        _links.Add(myParam, d);
-
-        if (d.isFrom) {
-            link.SetInputPosition(d.button.transform.position);
-        } else {
-            link.SetOutputPosition(d.button.transform.position);
+        int nbLink = 0;
+        foreach(NodeLink l in _links) {
+            if(l.infos.FromID == NodeInfos.id && l.infos.FromParam == paramName) {
+                nbLink++;
+            }
+            if(l.infos.ToID == NodeInfos.id && l.infos.ToParam == paramName) {
+                nbLink++;
+            }
         }
+        foreach(ParamInfos p in _nodePrefab.inputs) {
+            if(p.Name == paramName) {
+                switch (p.ConnectType) {
+                    case ParamInfos.ParamConnectType.Param0_1: return nbLink < 1;
+                    case ParamInfos.ParamConnectType.Param0_N: return true;
+                    case ParamInfos.ParamConnectType.Param1_1: return nbLink < 1;
+                    case ParamInfos.ParamConnectType.Param1_N: return true;
+                }
+            }
+        }
+        foreach(ParamInfos p in _nodePrefab.outputs) {
+            if(p.Name == paramName) {
+                switch (p.ConnectType) {
+                    case ParamInfos.ParamConnectType.Param0_1: return nbLink < 1;
+                    case ParamInfos.ParamConnectType.Param0_N: return true;
+                    case ParamInfos.ParamConnectType.Param1_1: return nbLink < 1;
+                    case ParamInfos.ParamConnectType.Param1_N: return true;
+                }
+            }
+        }
+
+        throw new Exception("not found param " + paramName);
+    }
+
+    public void SetLinkToParam(NodeLink link) {
+
+        if (link.infos.FromID == NodeInfos.id ||
+            link.infos.ToID == NodeInfos.id) {
+            foreach(NodeLink l in _links) {
+                if(l.infos.FromID == link.infos.FromID &&
+                    l.infos.FromParam == link.infos.FromParam &&
+                    l.infos.ToID == link.infos.ToID &&
+                    l.infos.ToParam == link.infos.ToParam) {
+                    return;
+                }
+            }                
+            _links.Add(link);
+        }
+        UpdateLinks();
     }
 
     void Clamp() {
@@ -157,12 +203,13 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
     }
 
     public void OnPointerClick(PointerEventData eventData) {
-        if (!_wasDraged) {
+        if (!_wasDraged && Editor.CanSelect()) {
             Editor.SetActiveNode(this);
         }
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
+        _dragDelta = Input.mousePosition - transform.position;
         _wasDraged = false;
     }
 
@@ -173,25 +220,42 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler,  IEndDragHan
 
         _wasDraged = true;
 
+        Vector3 inputPosition = Input.mousePosition - _dragDelta;
+
         Vector2 localPoint;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(Editor.GetModelZone(), Input.mousePosition, null, out localPoint);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(Editor.GetModelZone(), inputPosition, null, out localPoint);
         NodeInfos.posX = localPoint.x;
-        NodeInfos.posY = localPoint.y;
+        NodeInfos.posY = localPoint.y;        
 
-        foreach (ParamLinkDetail p in _links.Values) {
-            if (p.isFrom) {
-                p.link.SetInputPosition(p.button.transform.position);
-            } else {
-                p.link.SetOutputPosition(p.button.transform.position);
-            }
-        }
+        transform.position = inputPosition;
 
-        transform.position = Input.mousePosition;
+        UpdateLinks();
 
         Clamp();
     }
 
     public void OnEndDrag(PointerEventData eventData) {
         _wasDraged = false;
+    }
+
+    private void UpdateLinks() {
+
+        foreach (NodeLink l in _links) {
+            if(l.infos.FromID == NodeInfos.id) {
+                l.SetInputPosition(GetParamAttachPoint(l.infos.FromParam));
+            }
+            if(l.infos.ToID == NodeInfos.id) {
+                l.SetOutputPosition(GetParamAttachPoint(l.infos.ToParam));
+            }
+        }
+        if(IsValid()) {
+            GetComponent<Image>().color = Color.white;
+        } else {
+            GetComponent<Image>().color = Color.red;
+        }
+    }
+
+    private Vector2 GetParamAttachPoint(string paramName) {
+        return _buttons[paramName].transform.position;
     }
 }

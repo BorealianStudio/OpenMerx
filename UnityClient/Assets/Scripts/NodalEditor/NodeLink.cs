@@ -1,7 +1,11 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UI.Extensions;
 
 public class NodeLink : MonoBehaviour {
+
+    [SerializeField, Tooltip("")]
+    Button buttonSelect = null;
 
     UILineRenderer _line = null;
     RectTransform _rectTrasnform;
@@ -15,16 +19,18 @@ public class NodeLink : MonoBehaviour {
 
     private void Awake() {
         _line = GetComponent<UILineRenderer>();
-        _line.BezierMode = UILineRenderer.BezierType.Quick;
         _line.color = Color.red;
         _rectTrasnform = GetComponent<RectTransform>();
         _rectTrasnform.pivot = Vector2.zero;
+
+        buttonSelect.onClick.AddListener(OnClic);
 
         UpdateView();
     }
 
     public void SetColor(Color color) {
         _line.color = color;
+        buttonSelect.image.color = color;
     }
 
     public void SetInputPosition(Vector2 inPos) {
@@ -43,8 +49,17 @@ public class NodeLink : MonoBehaviour {
 
         UpdateView();
     }
+    
+    private void OnClic() {
+        if (Editor.CanSelect()){
+            Editor.SetActiveLink(this);
+        }
+    }
 
     void UpdateView() {
+
+        float dist = Vector2.Distance(from, to);
+        _line.BezierSegmentsPerCurve = System.Convert.ToInt32(dist / 10.0f);
 
         if (from.x < to.x) { 
             if (to.y > from.y) {
@@ -59,7 +74,7 @@ public class NodeLink : MonoBehaviour {
 
                 Vector2[] points = new Vector2[4];
                 points[0] = new Vector2(0.0f, 0.0f);
-                points[1] = new Vector2(_rectTrasnform.rect.width * 0.5f, 10.0f);
+                points[1] = new Vector2(_rectTrasnform.rect.width * 0.5f, 0.0f);
                 points[2] = new Vector2(_rectTrasnform.rect.width * 0.5f, _rectTrasnform.rect.height);
                 points[3] = new Vector2(_rectTrasnform.rect.width, _rectTrasnform.rect.height);
                 _line.Points = points;

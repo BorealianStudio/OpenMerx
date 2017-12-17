@@ -21,6 +21,7 @@ L'utilisation du contenu de ce projet est donc possible sous condition de citer 
 	Contenue basé sur le projet github.com/borealianstudio/OpenMerx sous licence MIT / CC-BY-4
 
 Les contributions au projet sont effectuées sous les licences citées plus haut.
+Les credits donnés aux oeuvres doivent être indiqués dans le fichier CREDITS.md
 
 # Installation de l'environnement 
 

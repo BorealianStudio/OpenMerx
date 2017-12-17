@@ -9,6 +9,11 @@ using UnityEngine;
 public class SimulatedWideDataManager : WideDataManager {
 
     SerializeContainer _container = null;
+    static public SerializeContainer Container { get {
+            SimulatedWideDataManager w = FindObjectOfType<SimulatedWideDataManager>();
+            return w._container;
+        }
+    }
 
     public Routes _routes = new Routes();
 
@@ -457,7 +462,7 @@ public class SimulatedWideDataManager : WideDataManager {
         _container._fleets.Add(fleet.ID, fleet);
         fleet.Data = f.Data;
         fleet.CurrentNode = 0;
-        fleet.TaskStartFrame = _container._currentFrame;
+        fleet.NextUpdateFrame = _container._currentFrame;
         fleet.ShipIDs = f.ShipIDs;
         fleet.LastHangar = f.FromHangarID;
         Hangar hangar = _container._hangars[f.FromHangarID];
