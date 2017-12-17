@@ -30,9 +30,17 @@ public class IfNode : ExecutableNode{
         bool result = boolParam.GetBool(paramName);
 
         if (result) {
+            foreach(int i in _fleet.ShipIDs) {
+                Ship ship = _data._ships[i];
+                ship.AddLog("Condition checked");
+            }
             MoveFlow(OutFlowTrue);
         } else {
-            MoveFlow(OutFlowFalse);
+            foreach (int i in _fleet.ShipIDs) {
+                Ship ship = _data._ships[i];
+                ship.AddLog("Condition failed");
+            }
+            MoveFlow(OutFlowFalse);            
         }
 
         return _fleet.LastUpdateFrame;

@@ -71,8 +71,16 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         prefabExplore.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N,"ExploreInput"));
         prefabExplore.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "ExploreOutput"));
         prefabExplore.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBookmark, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param0_N, "FoundLocation"));
+        prefabExplore.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBoolean, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param0_N, "FoundSomtingh"));
         prefabs.Add(prefabExplore.nodeName, prefabExplore);
-
+        /*
+        NodePrefabInfos prefabMine = new NodePrefabInfos();
+        prefabMine.nodeName = "Mine";
+        prefabMine.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N, MineNode.InFlow));
+        prefabMine.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBookmark, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_1, MineNode.Bookmark));
+        prefabMine.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, MineNode.OutFlow));
+        prefabs.Add(prefabMine.nodeName, prefabMine);
+        */
         NodePrefabInfos prefabMoveTo = new NodePrefabInfos();
         prefabMoveTo.nodeName = "Move To";
         prefabMoveTo.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N, "MoveInput"));

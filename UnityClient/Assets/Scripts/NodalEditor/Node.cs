@@ -76,12 +76,65 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         UpdateLinks();
     }
 
+    public bool IsValid() {
+        foreach(ParamInfos p in _nodePrefab.inputs) {
+            int linkCount = 0;
+            foreach(NodeLink n in _links) {
+                if(n.infos.ToID == NodeInfos.id &&  n.infos.ToParam == p.Name) {
+                    linkCount++;
+                }
+            }
+            switch (p.ConnectType) {
+                case ParamInfos.ParamConnectType.Param0_1:
+                if (linkCount > 1)
+                    return false;
+                break;
+                case ParamInfos.ParamConnectType.Param0_N:
+                break;
+                case ParamInfos.ParamConnectType.Param1_1:
+                if (linkCount != 1)
+                    return false;
+                break;
+                case ParamInfos.ParamConnectType.Param1_N:
+                if (linkCount < 1)
+                    return false;
+                break;
+            }
+        }
+        foreach (ParamInfos p in _nodePrefab.outputs) {
+            int linkCount = 0;
+            foreach (NodeLink n in _links) {
+                if (n.infos.FromID == NodeInfos.id &&  n.infos.FromParam == p.Name) {
+                    linkCount++;
+                }
+            }
+            switch (p.ConnectType) {
+                case ParamInfos.ParamConnectType.Param0_1:
+                if (linkCount > 1)
+                    return false;
+                break;
+                case ParamInfos.ParamConnectType.Param0_N:
+                break;
+                case ParamInfos.ParamConnectType.Param1_1:
+                if (linkCount != 1)
+                    return false;
+                break;
+                case ParamInfos.ParamConnectType.Param1_N:
+                if (linkCount < 1)
+                    return false;
+                break;
+            }
+        }
+        return true;
+    }
+
     public List<NodeLink> GetLinks() {
         return _links;
     }
 
     public void RemoveLink(NodeLink link) {
         _links.Remove(link);
+        UpdateLinks();
     }
 
     public void RemoveLinks(List<NodeLink> links) {
@@ -194,6 +247,11 @@ public class Node : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
             if(l.infos.ToID == NodeInfos.id) {
                 l.SetOutputPosition(GetParamAttachPoint(l.infos.ToParam));
             }
+        }
+        if(IsValid()) {
+            GetComponent<Image>().color = Color.white;
+        } else {
+            GetComponent<Image>().color = Color.red;
         }
     }
 
