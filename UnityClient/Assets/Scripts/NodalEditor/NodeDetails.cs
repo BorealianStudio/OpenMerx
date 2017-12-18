@@ -37,9 +37,7 @@ public class NodeDetails : MonoBehaviour {
     Transform CustomZone = null;
     [SerializeField, Tooltip("Trahsform ou on affiche l'info d'un link")]
     Transform linkInfos = null;
-
-    [SerializeField] HangarSelectionNodeView hangarSelectionNodeViewPrefab = null;
-        
+       
     private void Start() {
         _editor = GetComponentInParent<NodalEditor>();        
     }
@@ -54,11 +52,6 @@ public class NodeDetails : MonoBehaviour {
         _deleteButton.interactable = node.NodePrefabInfos.visible;
 
         Clear();
-
-        if(node.NodeInfos.type == "Hangar selector") {
-            HangarSelectionNodeView view = Instantiate(hangarSelectionNodeViewPrefab, CustomZone);
-            view.SetNode(node);
-        }
     }
 
     public void SetLink(NodeLink link) {        
