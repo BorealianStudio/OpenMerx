@@ -37,6 +37,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 224261580932120264}
+  - component: {fileID: 114998532210638884}
   m_Layer: 5
   m_Name: CustomZone
   m_TagString: Untagged
@@ -350,7 +351,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &1654981055740194
 GameObject:
   m_ObjectHideFlags: 1
@@ -1137,7 +1138,7 @@ MonoBehaviour:
   _deleteButton: {fileID: 114526753872795546}
   CustomZone: {fileID: 224261580932120264}
   linkInfos: {fileID: 224033566600049216}
-  hangarSelectionNodeViewPrefab: {fileID: 114788470095838290, guid: 120c9bd9547a06c4d96b6419d8c7a2fb,
+  dropDownPrefab: {fileID: 1771867193739632, guid: 0465d89763ffb7441a03e4a27d158fea,
     type: 2}
 --- !u!114 &114646046106064502
 MonoBehaviour:
@@ -1632,6 +1633,28 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Scrollbar+ScrollEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &114998532210638884
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1069054585497628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 1
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 0
 --- !u!222 &222067964996397748
 CanvasRenderer:
   m_ObjectHideFlags: 1

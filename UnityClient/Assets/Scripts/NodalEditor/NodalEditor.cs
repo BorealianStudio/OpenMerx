@@ -69,11 +69,12 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
     public class SaveStruct {
         public Dictionary<int, NodeInfos> nodes = new Dictionary<int, NodeInfos>();
         public List<LinkInfo> links = new List<LinkInfo>();
+        public Dictionary<string, NodePrefabInfos> prefabs = new Dictionary<string, NodePrefabInfos>();
     }
 
     private void Awake() {
 
-        //ici on crée les prefabs par defauts, a terme ca doit sortir
+        //ici on crée les prefabs par defauts, a terme ca doit sortir        
         NodePrefabInfos prefabStart = new NodePrefabInfos();
         prefabStart.nodeName = "Start";
         prefabStart.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, "StartOutput"));
@@ -87,6 +88,7 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
 
         NodePrefabInfos prefabStationSelector = new NodePrefabInfos();
         prefabStationSelector.nodeName = "Hangar selector";
+        prefabStationSelector.Configs.Add("hangarID", "Hangars");
         prefabStationSelector.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamHangar, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param0_N, "station"));
         prefabs.Add(prefabStationSelector.nodeName, prefabStationSelector);
 
@@ -97,14 +99,14 @@ public class NodalEditor : MonoBehaviour, IPointerClickHandler {
         prefabExplore.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBookmark, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param0_N, "FoundLocation"));
         prefabExplore.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBoolean, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param0_N, "FoundSomtingh"));
         prefabs.Add(prefabExplore.nodeName, prefabExplore);
-        /*
+        
         NodePrefabInfos prefabMine = new NodePrefabInfos();
         prefabMine.nodeName = "Mine";
         prefabMine.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N, MineNode.InFlow));
         prefabMine.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamBookmark, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_1, MineNode.Bookmark));
         prefabMine.outputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamOut, ParamInfos.ParamConnectType.Param1_1, MineNode.OutFlow));
         prefabs.Add(prefabMine.nodeName, prefabMine);
-        */
+        
         NodePrefabInfos prefabMoveTo = new NodePrefabInfos();
         prefabMoveTo.nodeName = "Move To";
         prefabMoveTo.inputs.Add(new ParamInfos(ParamInfos.ParamType.ParamFlow, ParamInfos.ParamDirection.ParamIn, ParamInfos.ParamConnectType.Param1_N, "MoveInput"));

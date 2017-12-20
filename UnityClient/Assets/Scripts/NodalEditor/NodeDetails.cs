@@ -35,9 +35,12 @@ public class NodeDetails : MonoBehaviour {
     [SerializeField] Button _deleteButton = null;
     [SerializeField, Tooltip("Transform ou instancier la vue custom en fonction du type de node")]
     Transform CustomZone = null;
-    [SerializeField, Tooltip("Trahsform ou on affiche l'info d'un link")]
+    [SerializeField, Tooltip("Transform ou on affiche l'info d'un link")]
     Transform linkInfos = null;
-       
+
+    [SerializeField, Tooltip("prefab pour un dropdown")]
+    GameObject dropDownPrefab = null;
+
     private void Start() {
         _editor = GetComponentInParent<NodalEditor>();        
     }
@@ -52,6 +55,14 @@ public class NodeDetails : MonoBehaviour {
         _deleteButton.interactable = node.NodePrefabInfos.visible;
 
         Clear();
+
+        foreach (string s in node.NodePrefabInfos.Configs.Keys) {
+            switch (node.NodePrefabInfos.Configs[s]) {
+                case "Hangars" : {
+                    Instantiate(dropDownPrefab,CustomZone);
+                } break;
+            }        
+        }        
     }
 
     public void SetLink(NodeLink link) {        
