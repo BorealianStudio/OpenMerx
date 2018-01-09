@@ -28,6 +28,8 @@ public class NodePrefabInfos{
     public List<ParamInfos> inputs = new List<ParamInfos>();
     public List<ParamInfos> outputs = new List<ParamInfos>();
 
+    public Dictionary<string, string> Configs = new Dictionary<string, string>();
+
     public string nodeName = "";
     public bool visible = true;
 }
