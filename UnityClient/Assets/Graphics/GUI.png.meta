@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 530a9c381f4fd0b45b74ef8b6a3f5a84
-timeCreated: 1512243882
+timeCreated: 1515530767
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -24,6 +24,7 @@ TextureImporter:
     21300034: toggleInside
     21300036: buttonCloseHigh
     21300038: border1
+    21300040: DropDown
   externalObjects: {}
   serializedVersion: 4
   mipmaps:
@@ -85,6 +86,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
   - buildTarget: Standalone
     maxTextureSize: 4096
     resizeAlgorithm: 0
@@ -94,6 +96,7 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
+    androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -157,8 +160,8 @@ TextureImporter:
       name: toggleBack
       rect:
         serializedVersion: 2
-        x: 5
-        y: 3913
+        x: 4
+        y: 4014
         width: 55
         height: 53
       alignment: 0
@@ -171,10 +174,10 @@ TextureImporter:
       name: toggleInside
       rect:
         serializedVersion: 2
-        x: 76
-        y: 3917
-        width: 34
-        height: 33
+        x: 30
+        y: 4070
+        width: 7
+        height: 7
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -206,6 +209,20 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 1, y: 1, z: 1, w: 1}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: DropDown
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 4078
+        width: 7
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
